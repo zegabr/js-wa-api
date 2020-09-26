@@ -15,21 +15,17 @@ function playWebAudio() {
     
     isPlaiyingWA = !isPlaiyingWA;
     if(!isPlaiyingWA){
-        // console.log('parando som');
         oscilator.disconnect();
         oscilator.stop();
         return;
     } 
     
-    // console.log('iniciando som');
-    
     oscilator = audioContext.createOscillator();
     var gain = audioContext.createGain();
-    oscilator.frequency.value = 150;
+    oscilator.frequency.value = 500;
     oscilator.type = 'sine';
     gain.gain.value = 0.5;
-    oscilator.connect(gain);
-    gain.connect(audioContext.destination);
+    oscilator.connect(gain).connect(audioContext.destination);
     oscilator.start(0);
 }
 
@@ -38,33 +34,32 @@ function getAscii(ch){
     return ch.charCodeAt(index);
 }
 
-page.addEventListener('keydown', (e) => {//start new sine oscilator
+//start new sine oscilator
+page.addEventListener('keydown', (e) => {
     let ch = e.key;
     console.log('started ' + ch);
     if(keyIsPlaying[ch] === true){
         return;
     }
     if(keySources[ch] == null) {
-        console.log(`tentando de novo`)
         keySources[ch] = audioContext.createOscillator();
+        keySources[ch].frequency.value = getAscii(ch)*(1000/127);
+        keySources[ch].type = 'sin';
+        let gain = audioContext.createGain();
+        gain.gain.value = 0.3;
+        keySources[ch].connect(gain).connect(audioContext.destination);
     }
-    let gain = audioContext.createGain();
-    gain.gain.value = 0.3;
-    keySources[ch].frequency.value = getAscii(ch);
-    keySources[ch].type = 'sine';
-    keySources[ch].connect(gain);
-    gain.connect(audioContext.destination);
+
     keySources[ch].start(0);
     keyIsPlaying[ch]=true;
-    console.log(keySources);
 });
 
-page.addEventListener('keyup', (e) => {//stop oscilator
+//stop oscilator
+page.addEventListener('keyup', (e) => {
     let ch = e.key;
     console.log('stopped ' + ch);
     keySources[ch].disconnect();
     keySources[ch].stop();
     keySources[ch]=null;
     keyIsPlaying[ch]=false;
-    console.log(keySources);
 });
