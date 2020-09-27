@@ -1,38 +1,18 @@
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
+
 var oscilator = null;
 
 var keySources = {};
-
 var keyIsPlaying ={};
 
-
-const page = document.getElementById('page');
-
-var isPlaiyingWA = false;
-
-function playWebAudio() {
-    
-    isPlaiyingWA = !isPlaiyingWA;
-    if(!isPlaiyingWA){
-        oscilator.disconnect();
-        oscilator.stop();
-        return;
-    } 
-    
-    oscilator = audioContext.createOscillator();
-    var gain = audioContext.createGain();
-    oscilator.frequency.value = 500;
-    oscilator.type = 'sine';
-    gain.gain.value = 0.5;
-    oscilator.connect(gain).connect(audioContext.destination);
-    oscilator.start(0);
-}
 
 function getAscii(ch){
     const index = 0;
     return ch.charCodeAt(index);
 }
+
+const page = document.getElementById('page');
 
 //start new sine oscilator
 page.addEventListener('keydown', (e) => {
@@ -45,9 +25,10 @@ page.addEventListener('keydown', (e) => {
         keySources[ch] = audioContext.createOscillator();
         keySources[ch].frequency.value = 220 + getAscii(ch)/8;
         keySources[ch].type = 'sine';
-        
-        let waveShaper = audioContext.createWaveShaper();
-        keySources[ch].connect(waveShaper).connect(audioContext.destination);
+        let gain = audioContext.createGain();
+        gain.gain.value = 0.3;
+
+        keySources[ch].connect(gain).connect(audioContext.destination);
     }
 
     keySources[ch].start(0);
@@ -63,4 +44,6 @@ page.addEventListener('keyup', (e) => {
     keySources[ch]=null;
     keyIsPlaying[ch]=false;
 });
+
+
 
