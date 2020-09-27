@@ -43,11 +43,11 @@ page.addEventListener('keydown', (e) => {
     }
     if(keySources[ch] == null) {
         keySources[ch] = audioContext.createOscillator();
-        keySources[ch].frequency.value = getAscii(ch)*(1000/127);
-        keySources[ch].type = 'sin';
-        let gain = audioContext.createGain();
-        gain.gain.value = 0.3;
-        keySources[ch].connect(gain).connect(audioContext.destination);
+        keySources[ch].frequency.value = 220 + getAscii(ch)/8;
+        keySources[ch].type = 'sine';
+        
+        let waveShaper = audioContext.createWaveShaper();
+        keySources[ch].connect(waveShaper).connect(audioContext.destination);
     }
 
     keySources[ch].start(0);
@@ -63,3 +63,4 @@ page.addEventListener('keyup', (e) => {
     keySources[ch]=null;
     keyIsPlaying[ch]=false;
 });
+
